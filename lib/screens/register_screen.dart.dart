@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../helpers/mostrar_alerta.dart';
+import '../services/auth_service.dart';
 import '../widgets/widgets.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -45,6 +48,9 @@ class _FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+
+    final authService = Provider.of<AuthService>( context );
+
     return Container(
       margin: const EdgeInsets.only(top: 40),
       padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -74,11 +80,22 @@ class _FormState extends State<_Form> {
           ),
 
           CustomButton(
-            onPressed: () {
-              print('emailController: ${emailController.text}');
-              print('passwordController: ${passwordController.text}');
-            },
             text: 'Login',
+            onPressed: authService.autenticando
+              ? null
+              : () async {
+                FocusScope.of(context).unfocus();
+                final registroOk = await authService.register(  nameController.text.trim(), emailController.text.trim(), passwordController.text.trim());
+                if( registroOk == true ) {
+                  // TODO: Conectar a nuestro socket server
+                  // ignore: use_build_context_synchronously
+                  Navigator.pushReplacementNamed(context, 'usuarios');
+                } else {
+                  // Mostrar alerta
+                  // ignore: use_build_context_synchronously
+                  mostrarAlerta(context, 'Registro incorrecto', registroOk);
+                }
+              }
           ),
 
         ],

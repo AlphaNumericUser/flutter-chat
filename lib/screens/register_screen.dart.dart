@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../helpers/mostrar_alerta.dart';
-import '../services/auth_service.dart';
+
+import '../services/services.dart';
 import '../widgets/widgets.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -50,6 +51,7 @@ class _FormState extends State<_Form> {
   Widget build(BuildContext context) {
 
     final authService = Provider.of<AuthService>( context );
+    final socketService = Provider.of<SocketService>(context);
 
     return Container(
       margin: const EdgeInsets.only(top: 40),
@@ -87,7 +89,7 @@ class _FormState extends State<_Form> {
                 FocusScope.of(context).unfocus();
                 final registroOk = await authService.register(  nameController.text.trim(), emailController.text.trim(), passwordController.text.trim());
                 if( registroOk == true ) {
-                  // TODO: Conectar a nuestro socket server
+                  socketService.connect();
                   // ignore: use_build_context_synchronously
                   Navigator.pushReplacementNamed(context, 'usuarios');
                 } else {
